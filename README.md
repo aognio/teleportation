@@ -356,6 +356,45 @@ After saving the profile script, reload it:
 . $PROFILE
 ```
 
+### Running the tests
+
+To verify the functionality of `tlp2`, a set of unit tests has been included. These tests ensure that all the core functionalities such as creating, updating, deleting, recalling, and listing aliases are working correctly. Follow the steps below to run the tests:
+
+1. **Ensure dependencies are installed**: 
+   - Make sure you have Go installed and properly set up. You can verify this with:
+     ```sh
+     go version
+     ```
+   - If `go` is not installed, follow the installation instructions for your platform on the [official Go website](https://golang.org/doc/install).
+   - I particularly like managing my Golang installation using the [asdf](https://asdf-vm.com/) version manager.
+
+2. **Navigate to the project directory**:
+   - Go to the root directory of the project:
+     ```sh
+     cd /path/to/teleportation
+     ```
+
+3. **Run tests**:
+   - Use the `go test` command to run all the test cases:
+     ```sh
+     go test ./cmd/tlp2-bin/
+     ```
+   - This command will run the unit tests defined in `tlp2_test.go` and output the results, indicating which tests passed or failed.
+
+4. **Expected output**:
+   - You should see an output summary that shows all tests passing if everything is set up correctly:
+     ```
+     ok  	github.com/aognio/teleportation/cmd/tlp2-bin	<time_taken>	s
+     ```
+   - If any test fails, you will see detailed information about what went wrong, making it easier to debug.
+
+5. **Test coverage** (Optional):
+   - To see the test coverage, you can use:
+     ```sh
+     go test ./cmd/tlp2-bin/ -cover
+     ```
+   - This will provide a coverage percentage, giving you an idea of how much of the code is covered by the tests.
+
 ## Features Summary
 
 - **Alias Management**:
