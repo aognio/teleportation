@@ -137,7 +137,7 @@ Expected output:
 Folder 'old/folder' has been renamed to 'new/folder'.
 ```
 
-### Use cases for alternative execution flows (errors)
+### Alternative execution flows for the use cases (e.g. errors)
 
 #### 1. Create alias without update flag (alias exists):
 ```bash
