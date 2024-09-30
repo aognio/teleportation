@@ -25,4 +25,4 @@ go.work.sum
 .env
 
 # Project's binaries
-tlp2-bin
+./tlp2-bin
