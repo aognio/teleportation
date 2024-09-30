@@ -279,25 +279,25 @@ func handleInsertOrUpdate(db *sql.DB, folderPath, alias, absolutePath string, up
 
 // handleRecall handles recalling an alias from a specific folder and printing the appropriate output
 func handleRecall(db *sql.DB, folderPath, alias string) {
-	var absolutePath string
-	selectSQL := `SELECT absolute_path FROM aliases WHERE folder_path = ? AND alias = ?`
-	err := db.QueryRow(selectSQL, folderPath, alias).Scan(&absolutePath)
-	if err == sql.ErrNoRows {
-		handleErrorOutput(fmt.Sprintf("Alias not found: %s/%s", folderPath, alias))
-	} else if err != nil {
-		handleFatalErrorOutput(fmt.Sprintf("Error retrieving alias: %v", err))
-	} else {
-		// Update the invocation count
-		updateInvocationCount(db, folderPath, alias)
-
-		if sourced {
-			// When sourced, output the actual cd command
-			handleCommandOutput(fmt.Sprintf("cd %s", absolutePath))
-		} else {
-			// When not sourced, provide an informative message
-			handleInformativeOutput(fmt.Sprintf("Alias '%s' under folder '%s' teleports to '%s'", alias, folderPath, absolutePath))
-		}
-	}
+    var absolutePath string
+    selectSQL := `SELECT absolute_path FROM aliases WHERE folder_path = ? AND alias = ?`
+    err := db.QueryRow(selectSQL, folderPath, alias).Scan(&absolutePath)
+    if err == sql.ErrNoRows {
+        handleErrorOutput(fmt.Sprintf("Error: Alias '%s' under folder '%s' does not exist.", alias, folderPath))
+    } else if err != nil {
+        handleErrorOutput(fmt.Sprintf("Error retrieving alias: %v", err))
+    } else {
+        // Update the invocation count
+        updateSQL := `UPDATE aliases SET invocation_count = invocation_count + 1 WHERE folder_path = ? AND alias = ?`
+        _, err = db.Exec(updateSQL, folderPath, alias)
+        if err != nil {
+            handleErrorOutput(fmt.Sprintf("Error updating invocation count: %v", err))
+            return
+        }
+        
+        // For recall, assume the parent shell changes directories
+        fmt.Printf("cd %s\n", absolutePath)
+    }
 }
 
 // handleList lists all aliases in the database
