@@ -21,6 +21,185 @@ The purpose of `tlp2-bin` is to provide a fast and easy way to manage and naviga
 - **Invocation Count Tracking**: Track the number of times an alias has been invoked for usage insights.
 - **Special Character Escaping**: Automatically escape special characters in output to avoid shell syntax errors.
 
+## Usage
+
+Create an alias like this:
+
+```bash
+tlp2 code/freelancing/projects petstore_website /home/johndoe/freelancing/projects/sarah/petstore/website
+```
+
+Now you can quickly jump to that folder just by typing this command:
+
+```bash
+tlp2 petstore_website
+```
+
+If there were two `petstore_website` aliases, you will have to specify the folder:
+
+```bash
+tlp2 code/freelancing/projects petstore_website
+```
+
+And that's it, for the most part. 
+
+The actual command binary is wrapped in a shell function so an actual "cd /path/to/folder" command is part of the output but your shell executes the command and the directory change takes places.
+
+There are, of course, many other uses cases related to mantaining this aliases collections that are detailed in the next section.
+
+Everything is stored in a SQLite database located at:
+
+```
+$HOME/.config/teleportation/teleportation.sqlite3
+```
+
+If you have the `sqlite3` command installed you can manipulate the records directly using SQL by issuing this command:
+
+```bash
+tlp2 --sqlite
+```
+
+### Use cases
+
+```bash
+tlp2 code/projects myapp /home/user/code/myapp
+```
+#### 1. Create alias:
+Expected output:
+```
+Alias 'myapp' created.
+```
+
+#### 2. Update alias:
+```bash
+tlp2 --update code/projects myapp /home/user/newpath/myapp
+```
+Expected output:
+```
+Alias 'myapp' updated.
+```
+
+#### 3. Delete alias:
+```bash
+tlp2 --delete code/projects myapp
+```
+Expected output:
+```
+Alias 'myapp' under folder 'code/projects' has been deleted.
+```
+
+#### 4. Recall alias:
+```bash
+tlp2 code/projects myapp
+```
+Effect:
+```
+The parent shell changes directories to `/home/user/code/myapp`.
+```
+
+#### 5. Search for alias across all folders:
+```bash
+tlp2 myapp
+```
+Effect:
+```
+The parent shell changes directories to the saved path associated with the alias.
+```
+
+#### 6. List all aliases:
+```bash
+tlp2 --list
+```
+Expected output:
+```
+5 aliases created under 3 different folders:
+alias1 folder1 /path/to/folder1
+alias2 folder2 /path/to/folder2
+```
+
+#### 7. List aliases under specific folder:
+```bash
+tlp2 --list code/projects
+```
+Expected output:
+```
+2 aliases found under 1 different folder:
+alias1 code/projects /home/user/code/projects/alias1
+alias2 code/projects /home/user/code/projects/alias2
+```
+
+#### 8. Rename folder:
+```bash
+tlp2 --rename-folder old/folder new/folder
+```
+Expected output:
+```
+Folder 'old/folder' has been renamed to 'new/folder'.
+```
+
+### Use cases for alternative execution flows (errors)
+
+#### 1. Create alias without update flag (alias exists):
+```bash
+tlp2 code/projects myapp /home/user/code/anotherpath
+```
+Expected output:
+```
+Error: Alias 'myapp' under folder 'code/projects' already exists. Use --update to modify it.
+```
+
+#### 2. Delete alias that does not exist:
+```bash
+tlp2 --delete code/projects nonexistent
+```
+Expected output:
+```
+Error: Alias 'nonexistent' under folder 'code/projects' does not exist.
+```
+
+#### 3. Recall non-existent alias:
+```bash
+tlp2 code/projects nonexistent
+```
+Expected output:
+```
+Error: Alias 'nonexistent' under folder 'code/projects' does not exist.
+```
+
+#### 4. List aliases under non-existent folder:
+```bash
+tlp2 --list nonexistent/folder
+```
+Expected output:
+```
+No folders match the 'nonexistent/folder' value
+```
+
+#### 5. Rename non-existent folder:
+```bash
+tlp2 --rename-folder nonexistent/folder new/folder
+```
+Expected output:
+```
+Error: Folder 'nonexistent/folder' does not exist.
+```
+
+#### 6. Invalid usage (incorrect parameters):
+```bash
+tlp2 code/projects
+```
+Expected output:
+```
+Usage for storing: tlp2 <folder_path> <alias> <absolute_path>
+Usage for updating: tlp2 --update <folder_path> <alias> <absolute_path>
+Usage for recalling: tlp2 <folder_path> <alias>
+Usage for searching: tlp2 <alias>
+Usage for listing all aliases: tlp2 --list [<partial_folder>]
+Usage for deleting: tlp2 --delete <folder_path> <alias>
+Usage for renaming a folder: tlp2 --rename-folder <old_folder_path> <new_folder_path>
+```
+
+
 ## How to Build
 
 ### Unix/Linux (Bash)
